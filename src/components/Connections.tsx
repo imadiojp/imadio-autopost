@@ -22,6 +22,11 @@ export default function Connections() {
   const { accounts, addAccount, updateAccount, removeAccount } = useApp()
   const [isConnecting, setIsConnecting] = useState(false)
 
+  // Load accounts on mount
+  useEffect(() => {
+    loadAccounts()
+  }, [])
+
   // Check for OAuth callback success/error on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
