@@ -111,6 +111,7 @@ export function initDatabase() {
   `)
 
   // OAuth sessions table (for storing code verifiers)
+  console.log('Creating oauth_sessions table...')
   db.exec(`
     CREATE TABLE IF NOT EXISTS oauth_sessions (
       state TEXT PRIMARY KEY,
@@ -120,6 +121,18 @@ export function initDatabase() {
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )
   `)
+
+  // Verify table was created
+  try {
+    const tables: any = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='oauth_sessions'").get()
+    if (tables) {
+      console.log('✓ oauth_sessions table exists')
+    } else {
+      console.error('✗ oauth_sessions table NOT found!')
+    }
+  } catch (error) {
+    console.error('Error checking oauth_sessions table:', error)
+  }
 
   console.log('Database initialized successfully')
 }

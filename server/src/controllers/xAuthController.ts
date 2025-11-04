@@ -63,9 +63,15 @@ export async function initiateXAuthAnonymous(req: any, res: Response) {
     const { url: authUrl, codeVerifier } = getAuthUrl(state)
 
     // Store session in database
-    db.prepare(
-      'INSERT OR REPLACE INTO oauth_sessions (state, user_id, code_verifier) VALUES (?, ?, ?)'
-    ).run(state, user.id, codeVerifier)
+    try {
+      db.prepare(
+        'INSERT OR REPLACE INTO oauth_sessions (state, user_id, code_verifier) VALUES (?, ?, ?)'
+      ).run(state, user.id, codeVerifier)
+      console.log(`✓ Stored OAuth session: state=${state}, userId=${user.id}`)
+    } catch (error) {
+      console.error('✗ Failed to store OAuth session:', error)
+      throw error
+    }
 
     res.json({
       success: true,
@@ -125,15 +131,18 @@ export async function handleXCallback(req: AuthRequest, res: Response) {
     }
 
     // Get session from database
+    console.log(`Looking for OAuth session with state=${state}`)
     const session: any = db
       .prepare('SELECT user_id, code_verifier FROM oauth_sessions WHERE state = ?')
       .get(state as string)
 
     if (!session) {
+      console.error(`✗ OAuth session not found for state=${state}`)
       return res.redirect(`${config.frontendUrl}/connections?error=invalid_state`)
     }
 
     const { user_id: userId, code_verifier: codeVerifier } = session
+    console.log(`✓ Found OAuth session: userId=${userId}`)
 
     // Exchange code for token
     const tokenData = await exchangeCodeForToken(
