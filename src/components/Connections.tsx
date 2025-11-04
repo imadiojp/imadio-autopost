@@ -43,7 +43,15 @@ export default function Connections() {
 
   const loadAccounts = async () => {
     try {
-      const response = await xAccountApi.getAccounts()
+      // Get anonymous user ID
+      const anonymousId = localStorage.getItem('anonymous_user_id')
+
+      if (!anonymousId) {
+        console.error('No anonymous ID found')
+        return
+      }
+
+      const response = await xAccountApi.getAccountsAnonymous(anonymousId)
       // Sync with local storage
       // Note: This is a simplified approach. In production, you'd want better state management
       response.accounts.forEach((account: any) => {

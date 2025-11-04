@@ -105,6 +105,16 @@ export const xAccountApi = {
     return apiRequest<{ success: boolean; accounts: any[] }>('/x-accounts')
   },
 
+  async getAccountsAnonymous(anonymousId: string) {
+    return apiRequest<{ success: boolean; accounts: any[] }>(
+      '/x-accounts/anonymous',
+      {
+        method: 'POST',
+        body: JSON.stringify({ anonymousId }),
+      }
+    )
+  },
+
   async disconnectAccount(accountId: string) {
     return apiRequest<{ success: boolean; message: string }>(
       `/x-accounts/${accountId}/disconnect`,

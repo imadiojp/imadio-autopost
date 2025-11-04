@@ -269,6 +269,55 @@ export async function getXAccounts(req: AuthRequest, res: Response) {
 }
 
 /**
+ * Get all X accounts for anonymous user
+ */
+export async function getXAccountsAnonymous(req: any, res: Response) {
+  try {
+    const { anonymousId } = req.body
+
+    if (!anonymousId) {
+      return res.status(400).json({ error: 'Anonymous ID is required' })
+    }
+
+    // Get user by anonymous ID
+    const user: any = db.prepare('SELECT id FROM users WHERE anonymous_id = ?').get(anonymousId)
+
+    if (!user) {
+      return res.json({ success: true, accounts: [] })
+    }
+
+    const accounts = db
+      .prepare(
+        `
+      SELECT id, display_name, username, account_type,
+             is_connected, avatar, created_at, updated_at
+      FROM x_accounts
+      WHERE user_id = ?
+      ORDER BY created_at DESC
+    `
+      )
+      .all(user.id) as any[]
+
+    res.json({
+      success: true,
+      accounts: accounts.map((acc) => ({
+        id: acc.id,
+        displayName: acc.display_name,
+        username: acc.username,
+        accountType: acc.account_type,
+        isConnected: Boolean(acc.is_connected),
+        avatar: acc.avatar,
+        createdAt: acc.created_at,
+        updatedAt: acc.updated_at,
+      })),
+    })
+  } catch (error: any) {
+    console.error('Get X accounts (anonymous) error:', error)
+    res.status(500).json({ error: 'Failed to get X accounts' })
+  }
+}
+
+/**
  * Disconnect an X account
  */
 export async function disconnectXAccount(req: AuthRequest, res: Response) {

@@ -22,6 +22,7 @@ router.post('/auth/x/initiate-anonymous', xAuthController.initiateXAuthAnonymous
 router.get('/auth/x/initiate', authenticateToken, xAuthController.initiateXAuth)
 router.get('/auth/x/callback', xAuthController.handleXCallback)
 router.get('/x-accounts', authenticateToken, xAuthController.getXAccounts)
+router.post('/x-accounts/anonymous', xAuthController.getXAccountsAnonymous)
 router.put(
   '/x-accounts/:accountId/disconnect',
   authenticateToken,
