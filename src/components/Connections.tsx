@@ -56,9 +56,12 @@ export default function Connections() {
         return
       }
 
+      console.log('🔍 loadAccounts called')
       const response = await xAccountApi.getAccountsAnonymous(anonymousId)
+      console.log('✅ Received accounts from server:', response.accounts.length, response.accounts)
       // Replace local state with server data (single source of truth)
       setAccounts(response.accounts)
+      console.log('✅ setAccounts called with', response.accounts.length, 'accounts')
     } catch (error: any) {
       console.error('Failed to load accounts:', error)
     }
@@ -112,6 +115,9 @@ export default function Connections() {
   }
 
   const connectedAccounts = accounts.filter((acc) => acc.isConnected)
+
+  // Debug: Log accounts array
+  console.log('📊 Rendering Connections with accounts:', accounts.length, accounts)
 
   return (
     <div className="p-4 md:p-8 max-w-4xl mx-auto">
