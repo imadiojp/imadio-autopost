@@ -18,6 +18,7 @@ router.post('/auth/login', authController.login)
 router.get('/auth/me', authenticateToken, authController.getCurrentUser)
 
 // X OAuth routes
+router.post('/auth/x/initiate-anonymous', xAuthController.initiateXAuthAnonymous)
 router.get('/auth/x/initiate', authenticateToken, xAuthController.initiateXAuth)
 router.get('/auth/x/callback', xAuthController.handleXCallback)
 router.get('/x-accounts', authenticateToken, xAuthController.getXAccounts)

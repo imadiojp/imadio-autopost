@@ -32,6 +32,56 @@ setInterval(() => {
 }, 60 * 60 * 1000)
 
 /**
+ * Initiate X OAuth flow (anonymous)
+ */
+export async function initiateXAuthAnonymous(req: any, res: Response) {
+  try {
+    const { anonymousId } = req.body
+
+    if (!anonymousId) {
+      return res.status(400).json({ error: 'Anonymous ID is required' })
+    }
+
+    // Check if anonymous user exists, if not create one
+    let user: any = db.prepare('SELECT id FROM users WHERE anonymous_id = ?').get(anonymousId)
+
+    if (!user) {
+      // Create anonymous user
+      const result = db.prepare('INSERT INTO users (anonymous_id) VALUES (?)').run(anonymousId)
+      const userId = result.lastInsertRowid as number
+
+      // Create default settings
+      db.prepare('INSERT INTO settings (user_id) VALUES (?)').run(userId)
+
+      user = { id: userId }
+    }
+
+    // Generate state parameter for CSRF protection
+    const state = crypto.randomBytes(16).toString('hex')
+    const codeVerifier = crypto.randomBytes(32).toString('base64url')
+
+    // Store session
+    oauthSessions.set(state, {
+      userId: user.id,
+      codeVerifier,
+      createdAt: Date.now(),
+    })
+
+    // Get authorization URL
+    const authUrl = getAuthUrl(state)
+
+    res.json({
+      success: true,
+      authUrl,
+      state,
+    })
+  } catch (error: any) {
+    console.error('Initiate X auth error:', error)
+    res.status(500).json({ error: 'Failed to initiate X authentication' })
+  }
+}
+
+/**
  * Initiate X OAuth flow
  */
 export async function initiateXAuth(req: AuthRequest, res: Response) {

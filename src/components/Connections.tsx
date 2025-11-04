@@ -67,8 +67,11 @@ export default function Connections() {
 
     setIsConnecting(true)
     try {
+      // Get anonymous user ID
+      const anonymousId = localStorage.getItem('anonymous_user_id')
+
       // Get OAuth URL from backend
-      const response = await xAccountApi.initiateAuth()
+      const response = await xAccountApi.initiateAuthAnonymous(anonymousId!)
 
       // Redirect to X OAuth page
       window.location.href = response.authUrl

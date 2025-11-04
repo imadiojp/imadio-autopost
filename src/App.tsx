@@ -31,7 +31,6 @@ import SettingsView from './components/SettingsView'
 import Connections from './components/Connections'
 import EmptyStates from './components/EmptyStates'
 import MarketingCard from './components/MarketingCard'
-import Auth from './components/Auth'
 import { Toaster } from 'sonner'
 
 type Page =
@@ -48,12 +47,13 @@ function App() {
   const [currentPage, setCurrentPage] = useState<Page>('composer')
   const [isDark, setIsDark] = useState(false)
   const [editingPostId, setEditingPostId] = useState<string | null>(null)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
-    // Check if user is logged in
-    const token = localStorage.getItem('auth_token')
-    setIsAuthenticated(!!token)
+    // Generate anonymous user ID if not exists
+    if (!localStorage.getItem('anonymous_user_id')) {
+      const anonymousId = `anon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      localStorage.setItem('anonymous_user_id', anonymousId)
+    }
   }, [])
 
   const toggleTheme = () => {
@@ -101,16 +101,6 @@ function App() {
       default:
         return <Composer editingPostId={editingPostId} onEditComplete={() => setEditingPostId(null)} />
     }
-  }
-
-  // Show auth screen if not logged in
-  if (!isAuthenticated) {
-    return (
-      <>
-        <Auth onSuccess={() => setIsAuthenticated(true)} />
-        <Toaster position="top-right" />
-      </>
-    )
   }
 
   return (

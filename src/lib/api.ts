@@ -91,6 +91,16 @@ export const xAccountApi = {
     )
   },
 
+  async initiateAuthAnonymous(anonymousId: string) {
+    return apiRequest<{ success: boolean; authUrl: string; state: string }>(
+      '/auth/x/initiate-anonymous',
+      {
+        method: 'POST',
+        body: JSON.stringify({ anonymousId }),
+      }
+    )
+  },
+
   async getAccounts() {
     return apiRequest<{ success: boolean; accounts: any[] }>('/x-accounts')
   },
