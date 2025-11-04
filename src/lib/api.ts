@@ -46,12 +46,12 @@ async function apiRequest<T>(
 
 // Auth API
 export const authApi = {
-  async register(email: string, password: string) {
+  async register(username: string, email: string, password: string) {
     const data = await apiRequest<{ success: boolean; token: string; user: any }>(
       '/auth/register',
       {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, email, password }),
       }
     )
     if (data.token) {

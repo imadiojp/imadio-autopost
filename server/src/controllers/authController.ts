@@ -8,10 +8,14 @@ import { generateToken } from '../middleware/auth'
  */
 export async function register(req: Request, res: Response) {
   try {
-    const { email, password } = req.body
+    const { username, email, password } = req.body
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' })
+    }
+
+    if (!username) {
+      return res.status(400).json({ error: 'Username is required' })
     }
 
     // Check if user already exists
@@ -28,8 +32,8 @@ export async function register(req: Request, res: Response) {
 
     // Create user
     const result = db
-      .prepare('INSERT INTO users (email, password_hash) VALUES (?, ?)')
-      .run(email, passwordHash)
+      .prepare('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)')
+      .run(username, email, passwordHash)
 
     const userId = result.lastInsertRowid as number
 
