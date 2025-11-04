@@ -92,7 +92,7 @@ export const xAccountApi = {
   },
 
   async initiateAuthAnonymous(anonymousId: string) {
-    return apiRequest<{ success: boolean; authUrl: string; state: string }>(
+    return apiRequest<{ success: boolean; authUrl: string; state: string; codeVerifier: string }>(
       '/auth/x/initiate-anonymous',
       {
         method: 'POST',

@@ -58,22 +58,20 @@ export async function initiateXAuthAnonymous(req: any, res: Response) {
 
     // Generate state parameter for CSRF protection
     const state = crypto.randomBytes(16).toString('hex')
-    const codeVerifier = crypto.randomBytes(32).toString('base64url')
 
-    // Store session
-    oauthSessions.set(state, {
-      userId: user.id,
-      codeVerifier,
-      createdAt: Date.now(),
-    })
+    // Get authorization URL with code verifier
+    const { url: authUrl, codeVerifier } = getAuthUrl(state)
 
-    // Get authorization URL
-    const authUrl = getAuthUrl(state)
+    // Store session in database
+    db.prepare(
+      'INSERT OR REPLACE INTO oauth_sessions (state, user_id, code_verifier) VALUES (?, ?, ?)'
+    ).run(state, user.id, codeVerifier)
 
     res.json({
       success: true,
       authUrl,
       state,
+      codeVerifier,
     })
   } catch (error: any) {
     console.error('Initiate X auth error:', error)
@@ -118,7 +116,7 @@ export async function initiateXAuth(req: AuthRequest, res: Response) {
  */
 export async function handleXCallback(req: AuthRequest, res: Response) {
   try {
-    const { code, state } = req.query
+    const { code, state, code_verifier } = req.query
 
     if (!code || !state) {
       return res.redirect(
@@ -126,14 +124,16 @@ export async function handleXCallback(req: AuthRequest, res: Response) {
       )
     }
 
-    // Verify state and get session
-    const session = oauthSessions.get(state as string)
+    // Get session from database
+    const session: any = db
+      .prepare('SELECT user_id, code_verifier FROM oauth_sessions WHERE state = ?')
+      .get(state as string)
 
     if (!session) {
       return res.redirect(`${config.frontendUrl}/connections?error=invalid_state`)
     }
 
-    const { userId, codeVerifier } = session
+    const { user_id: userId, code_verifier: codeVerifier } = session
 
     // Exchange code for token
     const tokenData = await exchangeCodeForToken(
@@ -208,8 +208,8 @@ export async function handleXCallback(req: AuthRequest, res: Response) {
       )
     }
 
-    // Clean up session
-    oauthSessions.delete(state as string)
+    // Clean up session from database
+    db.prepare('DELETE FROM oauth_sessions WHERE state = ?').run(state as string)
 
     // Redirect to frontend with success
     res.redirect(`${config.frontendUrl}/connections?success=true`)

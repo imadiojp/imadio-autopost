@@ -73,6 +73,10 @@ export default function Connections() {
       // Get OAuth URL from backend
       const response = await xAccountApi.initiateAuthAnonymous(anonymousId!)
 
+      // Store code verifier and state in localStorage
+      localStorage.setItem('oauth_code_verifier', response.codeVerifier)
+      localStorage.setItem('oauth_state', response.state)
+
       // Redirect to X OAuth page
       window.location.href = response.authUrl
     } catch (error: any) {

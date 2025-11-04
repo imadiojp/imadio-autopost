@@ -21,7 +21,7 @@ export function createXClient(accessToken: string): TwitterApi {
 /**
  * Get OAuth 2.0 authorization URL for X login
  */
-export function getAuthUrl(state: string): string {
+export function getAuthUrl(state: string): { url: string; codeVerifier: string } {
   const client = new TwitterApi({
     clientId: config.xApi.clientId,
     clientSecret: config.xApi.clientSecret,
@@ -35,9 +35,7 @@ export function getAuthUrl(state: string): string {
     }
   )
 
-  // Store codeVerifier temporarily (in production, use Redis or session storage)
-  // For now, we'll return it and expect the callback to provide it
-  return url
+  return { url, codeVerifier }
 }
 
 /**

@@ -110,6 +110,17 @@ export function initDatabase() {
     )
   `)
 
+  // OAuth sessions table (for storing code verifiers)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS oauth_sessions (
+      state TEXT PRIMARY KEY,
+      user_id INTEGER NOT NULL,
+      code_verifier TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `)
+
   console.log('Database initialized successfully')
 }
 
