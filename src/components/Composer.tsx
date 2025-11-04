@@ -86,7 +86,6 @@ export default function Composer({ editingPostId, onEditComplete }: ComposerProp
   const charLimit = getCharLimit()
 
   // 全スレッドの文字数をカウント
-  const totalCharCount = threads.reduce((sum, thread) => sum + thread.text.length, 0)
   const isOverLimit = threads.some((thread) => thread.text.length > charLimit)
 
   const handleAccountToggle = (accountId: string) => {

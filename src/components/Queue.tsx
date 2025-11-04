@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Image, MessageSquare, Play, Pause, Trash2, Calendar, Clock, Edit } from 'lucide-react'
+import { Image, MessageSquare, Trash2, Calendar, Clock, Edit } from 'lucide-react'
 import { Button } from './ui/button'
 import { Card, CardContent } from './ui/card'
 import { Badge } from './ui/badge'
@@ -19,7 +19,7 @@ interface QueueProps {
 }
 
 export default function Queue({ onEditPost }: QueueProps) {
-  const { posts, accounts, updatePost, removePost } = useApp()
+  const { posts, accounts, removePost } = useApp()
   const [filter, setFilter] = useState<'all' | 'scheduled' | 'paused'>('all')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
 

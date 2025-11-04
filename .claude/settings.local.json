@@ -5,7 +5,15 @@
       "Bash(npm run dev:*)",
       "Bash(npm run build:*)",
       "Bash(npm install:*)",
-      "Bash(npm init:*)"
+      "Bash(npm init:*)",
+      "Bash(git push:*)",
+      "Bash(git config:*)",
+      "Bash(echo \"GitHubの認証方法を確認するために、以下のコマンドを実行してください:\ngh auth status\")",
+      "Bash(git remote remove:*)",
+      "Bash(git remote add:*)",
+      "Bash(node:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
