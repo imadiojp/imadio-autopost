@@ -7,6 +7,7 @@ interface AppContextType {
   addAccount: (account: Account) => void
   updateAccount: (id: string, updates: Partial<Account>) => void
   removeAccount: (id: string) => void
+  setAccounts: (accounts: Account[]) => void
 
   // Posts
   posts: Post[]
@@ -101,6 +102,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addAccount,
     updateAccount,
     removeAccount,
+    setAccounts,
     posts,
     addPost,
     updatePost,

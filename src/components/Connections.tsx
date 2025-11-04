@@ -19,7 +19,7 @@ import { xAccountApi } from '../lib/api'
 const MAX_ACCOUNTS = 5
 
 export default function Connections() {
-  const { accounts, addAccount, updateAccount, removeAccount } = useApp()
+  const { accounts, addAccount, updateAccount, removeAccount, setAccounts } = useApp()
   const [isConnecting, setIsConnecting] = useState(false)
 
   // Load accounts on mount
@@ -57,16 +57,8 @@ export default function Connections() {
       }
 
       const response = await xAccountApi.getAccountsAnonymous(anonymousId)
-      // Sync with local storage
-      // Note: This is a simplified approach. In production, you'd want better state management
-      response.accounts.forEach((account: any) => {
-        const existingAccount = accounts.find((a) => a.id === account.id)
-        if (!existingAccount) {
-          addAccount(account)
-        } else {
-          updateAccount(account.id, account)
-        }
-      })
+      // Replace local state with server data (single source of truth)
+      setAccounts(response.accounts)
     } catch (error: any) {
       console.error('Failed to load accounts:', error)
     }
